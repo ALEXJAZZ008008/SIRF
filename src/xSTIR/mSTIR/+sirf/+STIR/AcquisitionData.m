@@ -29,6 +29,14 @@ classdef AcquisitionData < sirf.SIRF.DataContainer
         function obj = same_object()
             obj = sirf.STIR.AcquisitionData();
         end
+        
+        function rebin(num_segments_to_combine, num_views_to_combine, num_tang_poss_to_trim, do_normalisation, max_in_segment_num_to_process)
+            h = calllib...
+                ('mstir', 'cSTIR_rebinnedAcquisitionData', num_segments_to_combine, num_views_to_combine, num_tang_poss_to_trim, do_normalisation, max_in_segment_num_to_process);
+            sirf.Utilities.check_status('AcquisitionData', h);
+            sirf.Utilities.delete(h)
+        end
+        
         function set_storage_scheme(scheme)
 %***SIRF*** Sets acquisition data storage scheme.
 %           scheme = 'file' (default):
