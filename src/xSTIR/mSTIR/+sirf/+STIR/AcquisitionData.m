@@ -33,7 +33,7 @@ classdef AcquisitionData < sirf.SIRF.DataContainer
         function ad = rebin(self, num_segments_to_combine, num_views_to_combine, num_tang_poss_to_trim, do_normalisation, max_in_segment_num_to_process)
             ad = sirf.STIR.AcquisitionData()
             ad.handle_ = calllib...
-                ('mstir', 'cSTIR_rebinnedAcquisitionData', self.handle_, num_segments_to_combine, num_views_to_combine, num_tang_poss_to_trim, do_normalisation, max_in_segment_num_to_process);
+                ('mstir', 'mSTIR_rebinnedAcquisitionData', self.handle_, num_segments_to_combine, num_views_to_combine, num_tang_poss_to_trim, do_normalisation, max_in_segment_num_to_process);
             sirf.Utilities.check_status('AcquisitionData', ad.handle_);
         end
         
