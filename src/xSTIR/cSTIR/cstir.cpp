@@ -24,6 +24,7 @@ limitations under the License.
 #include "sirf/STIR/cstir_p.h"
 #include "sirf/STIR/stir_x.h"
 #include "stir/ImagingModality.h"
+#include "stir/Verbosity.h"
 
 using namespace stir;
 using namespace sirf;
@@ -64,6 +65,13 @@ cSTIR_newReconstructionMethod(const char* par_file)
 }
 
 extern "C"
+void* cSTIR_setVerbosity(const int verbosity)
+{
+    stir::Verbosity::set(verbosity);
+    return new DataHandle;
+}
+
+extern "C"
 void* cSTIR_newObject(const char* name)
 {
 	try {
@@ -87,6 +95,8 @@ void* cSTIR_newObject(const char* name)
 			return NEW_OBJECT_HANDLE(CylindricFilter3DF);
 		if (boost::iequals(name, "EllipsoidalCylinder"))
 			return NEW_OBJECT_HANDLE(EllipsoidalCylinder);
+		if (boost::iequals(name, "SeparableGaussianImageFilter"))
+			return NEW_OBJECT_HANDLE(xSTIR_SeparableGaussianImageFilter);
 		return unknownObject("object", name, __FILE__, __LINE__);
 	}
 	CATCH;
@@ -101,6 +111,8 @@ void* cSTIR_setParameter
 		CAST_PTR(DataHandle, hv, ptr_v);
 		if (boost::iequals(obj, "ListmodeToSinograms"))
 			return cSTIR_setListmodeToSinogramsParameter(ptr_s, name, ptr_v);
+		else if (boost::iequals(obj, "SeparableGaussianImageFilter"))
+			return cSTIR_setSeparableGaussianImageFilterParameter(ptr_s, name, ptr_v);
 		else if (boost::iequals(obj, "Shape"))
 			return cSTIR_setShapeParameter(ptr_s, name, ptr_v);
 		else if (boost::iequals(obj, "EllipsoidalCylinder"))
@@ -301,6 +313,20 @@ void* cSTIR_computeRandoms(void* ptr)
 			return handle;
 		}
 		return newObjectHandle(lm2s.get_randoms_sptr());
+	}
+	CATCH;
+}
+
+extern "C"
+void* cSTIR_setupImageDataProcessor(const void* ptr_p, void* ptr_i)
+{
+	try {
+		DataProcessor<Image3DF>& processor =
+			objectFromHandle<DataProcessor<Image3DF> >(ptr_p);
+		STIRImageData& id = objectFromHandle<STIRImageData>(ptr_i);
+		Image3DF& image = id.data();
+		processor.set_up(image);
+		return (void*) new DataHandle;
 	}
 	CATCH;
 }
@@ -938,6 +964,42 @@ void* cSTIR_writeImage(void* ptr_i, const char* filename)
 		return (void*) new DataHandle;
 	}
 	CATCH;
+}
+
+extern "C"
+void* cSTIR_ImageData_zoom_image(void* ptr_im, const size_t zooms_ptr_raw, const size_t offsets_in_mm_ptr_raw,
+                                 const size_t new_sizes_ptr_raw, const char *const zoom_options)
+{
+    try {
+        STIRImageData& id = objectFromHandle<STIRImageData>(ptr_im);
+
+        const float* zooms_ptr         = (const float*)zooms_ptr_raw;
+        const float* offsets_in_mm_ptr = (const float*)offsets_in_mm_ptr_raw;
+        const  int*  new_sizes_ptr     = (const  int* )new_sizes_ptr_raw;
+
+        Coord3DF zooms(zooms_ptr[0],zooms_ptr[1],zooms_ptr[2]);
+        Coord3DF offsets_in_mm(offsets_in_mm_ptr[0],offsets_in_mm_ptr[1],offsets_in_mm_ptr[2]);
+        Coord3DI new_sizes(new_sizes_ptr[0],new_sizes_ptr[1],new_sizes_ptr[2]);
+
+        id.zoom_image(zooms, offsets_in_mm, new_sizes, zoom_options);
+
+		return static_cast<void*>(new DataHandle);
+	}
+	CATCH;
+}
+
+extern "C"
+void* cSTIR_ImageData_move_to_scanner_centre(void* im_ptr, const void* acq_data_ptr)
+{
+    try {
+        STIRImageData& im = objectFromHandle<STIRImageData>(im_ptr);
+        PETAcquisitionData& ad = objectFromHandle<PETAcquisitionData>(acq_data_ptr);
+        im.move_to_scanner_centre(ad);
+
+        return static_cast<void*>(new DataHandle);
+	}
+	CATCH;
+
 }
 
 extern "C"

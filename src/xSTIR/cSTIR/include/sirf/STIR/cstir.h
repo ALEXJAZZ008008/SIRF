@@ -37,6 +37,9 @@ extern "C" {
 		(void* ptr, const char* obj, const char* name, const void* value);
 	void* parameter(const void* ptr, const char* obj, const char* name);
 
+    // Global
+    void* cSTIR_setVerbosity(const int verbosity_ptr);
+
 	// Common STIR Object methods
 	void* cSTIR_newObject(const char* name);
 	void* cSTIR_objectFromFile(const char* name, const char* filename);
@@ -54,6 +57,7 @@ extern "C" {
 	void* cSTIR_computeRandoms(void* ptr);
 
 	// Data processor methods
+	void* cSTIR_setupImageDataProcessor(const void* ptr_p, void* ptr_i);
 	void* cSTIR_applyImageDataProcessor(const void* ptr_p, void* ptr_d);
 
 	// Acquisition model methods
@@ -134,6 +138,12 @@ extern "C" {
 	void* cSTIR_fillImage(void* ptr_i, float v);
 	void* cSTIR_addShape(void* ptr_i, void* ptr_s, float v);
 	void* cSTIR_writeImage(void* ptr_i, const char* filename); 
+    void* cSTIR_ImageData_zoom_image(void* ptr_im,
+                                     const PTR_FLOAT zooms_ptr_raw,
+                                     const PTR_FLOAT offsets_in_mm_ptr_raw,
+                                     const PTR_INT new_sizes_ptr_raw,
+                                     const char * const zoom_options);
+    void* cSTIR_ImageData_move_to_scanner_centre(void* im_ptr, const void* acq_data_ptr);
 
 	// TextWriter methods
 	void* newTextPrinter(const char* stream);

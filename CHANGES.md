@@ -1,5 +1,33 @@
 # ChangeLog
 
+## vX.X.X
+
+* We have now corrected the geometrical information of `.h5` images (coming from ISMRMRD and Gadgetron). This means we can now convert them to other SIRF image types (e.g., `NiftiImageData` and `STIRImageData`). This is necessary for any kind of synergistic reconstruction. Further, to the best of our knowledge, this is the first ISMRMRD to NIfTI converter out there!
+* The adjoint transformation has now been implemented for `NiftyResample` through the wrapping of NiftyMoMo.
+* `Resample::process()` has been marked as deprecated. Instead, the following methods have been added to C++, python and matlab NiftyResample:
+	* `out = forward(in)`
+	* `forward(out, in)`
+	* `out = adjoint(in)`
+	* `adjoint(out, in)`
+	* `out = backward(in)` <- alias for adjoint
+	* `backward(out, in)` <- alias for adjoint
+
+## v2.1.0
+
+* PET/STIR
+	* Interfaced HKEM into SIRF
+	* Interfaced SeparableGaussianImageFilter into SIRF
+* MR/Gadgetron
+	* Added DICOM-writing gadgets for MR images output
+	* Added few Gadgetron GPU gadgets to SIRF gadget library
+	* Enabled handling of 3D slices of MR images by switching to 3D FFT
+* Python
+	* Switched to new class style
+	* Introduced contiguity checks of filled data
+* CIL/SIRF Compatibility
+     * added methods to AcquisitionData, ImageData and AcquisitionModel to be compatible with
+       CCPi's Core Imaging Library (CIL)
+
 ## v2.0.0
 
 * Set CMake policy CMP0079.

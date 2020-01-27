@@ -268,6 +268,12 @@ public:
     /// Get mean
     float get_mean() const;
 
+    /// Get variance
+    float get_variance() const;
+
+    /// Get standard deviation
+    float get_standard_deviation() const;
+
     /// Get element
     float get_element(const int idx[7]) const;
 
@@ -305,6 +311,9 @@ public:
     int get_original_datatype() const { return _original_datatype; }
 
     /// Check if the norms of two images are equal to a given accuracy.
+    static bool are_equal_to_given_accuracy(const std::shared_ptr<const NiftiImageData> &im1_sptr, const std::shared_ptr<const NiftiImageData> &im2_sptr, const float required_accuracy_compared_to_max);
+
+    /// Check if the norms of two images are equal to a given accuracy.
     static bool are_equal_to_given_accuracy(const NiftiImageData &im1, const NiftiImageData &im2, const float required_accuracy_compared_to_max);
 
     /// Point is in bounds?
@@ -339,6 +348,21 @@ public:
 
     /// Does the image contain any NaNs?
     bool get_contains_nans() const { return (this->get_nan_count() > 0); }
+
+    /// Flip the image along a given axis (Rotation of 180 degrees about axis)
+    void flip_along_axis(const unsigned axis);
+
+    /// Mirror the image along a given axis (This will change handedness of image)
+    void mirror_along_axis(const unsigned axis);
+
+    /// Inner product of two images.
+    dataType get_inner_product(const NiftiImageData &other) const;
+
+    /// Normalise image between 0 and 1
+    void normalise_zero_and_one();
+
+    /// Standardise (subtract mean and divide by standard deviation).
+    void standardise();
 
 protected:
 

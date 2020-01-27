@@ -48,15 +48,11 @@ TARGET_INCLUDE_DIRECTORIES(Reg PUBLIC
 )
 
 # NIFTYREG
-TARGET_LINK_LIBRARIES(Reg PUBLIC ${NIFTYREG_LIBRARIES} ${NIFTYREG_LIBRARIES})
+TARGET_LINK_LIBRARIES(Reg PUBLIC ${NR_libs_full_path} ${NR_libs_full_path})
+TARGET_INCLUDE_DIRECTORIES(Reg BEFORE PUBLIC "${NIFTYREG_INCLUDE_DIRS}")
 
-# If niftyreg was bulit with OpenMP
-if (NIFTYREG_BUILT_WITH_OPENMP)
-  find_package(OpenMP REQUIRED)
-  if (OpenMP_CXX_FOUND)
-    TARGET_LINK_LIBRARIES(Reg PUBLIC OpenMP::OpenMP_CXX)
-  endif()
-endif()
+# link against NiftyMoMo
+TARGET_LINK_LIBRARIES(Reg PUBLIC NiftyMoMo)
 
 # Add boost library dependencies
 if((CMAKE_VERSION VERSION_LESS 3.5.0) OR (NOT _Boost_IMPORTED_TARGETS))
@@ -80,6 +76,7 @@ SET(REG_executables
     sirf_tensor_split_join
     sirf_change_datatype
     sirf_crop_image
+    sirf_flip_or_mirror_image
     )
 
 FOREACH(elem ${REG_executables})
