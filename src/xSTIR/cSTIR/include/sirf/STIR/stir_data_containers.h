@@ -243,6 +243,10 @@ namespace sirf {
 		{
 			return data()->get_num_tof_poss();
 		}
+		int get_num_non_tof_sinograms()
+		{
+			return data()->get_num_sinograms() / data()->get_num_tof_poss();
+		}
 		int get_max_segment_num() const
 		{
 			return data()->get_max_segment_num();
